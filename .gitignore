@@ -1,0 +1,18 @@
+# PlatformIO (firmware)
+d-fsu-esp-firmware/.pio/
+d-fsu-esp-firmware/.pioenvs/
+d-fsu-esp-firmware/.piolibdeps/
+d-fsu-esp-firmware/.vscode/
+d-fsu-esp-firmware/.clangd
+d-fsu-esp-firmware/compile_commands.json
+
+# HA config — secrets and generated certs
+ha-config/certs/*.key
+ha-config/certs/*.pem
+ha-config/secrets.yaml
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*~

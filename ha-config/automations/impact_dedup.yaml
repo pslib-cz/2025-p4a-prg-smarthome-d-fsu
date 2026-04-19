@@ -1,0 +1,41 @@
+# Dedup gate for impact events.
+#
+# The same event may arrive twice: once directly over MQTT from the box, once
+# relayed by the phone (BLE → app → REST → HA) when the box has no WiFi. Both
+# paths publish to `dfsu/<id>/impact` with the same `id` field. We want HA to
+# surface each event exactly once regardless of which path won the race.
+#
+# Strategy: track the last-seen id per device in an input_number helper; drop
+# any message whose id is <= the stored value.
+#
+# Requires an input_number per device:
+#   input_number:
+#     dfsu_a1b2_last_impact_id:
+#       min: 0
+#       max: 4294967295
+#       step: 1
+#       initial: 0
+
+- alias: "D-FSU a1b2 — impact dedup"
+  id: dfsu_a1b2_impact_dedup
+  mode: queued        # serialize so two publishes in-flight don't race the compare
+  trigger:
+    - platform: mqtt
+      topic: dfsu/a1b2/impact
+  condition:
+    # Drop if id already covered by a prior publish.
+    - "{{ trigger.payload_json.id | int(0) > states('input_number.dfsu_a1b2_last_impact_id') | int(0) }}"
+  action:
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.dfsu_a1b2_last_impact_id
+      data:
+        value: "{{ trigger.payload_json.id }}"
+    # Downstream: fire whatever notification / logbook entry / persistent_
+    # notification the final UX needs. Start with a logbook entry so the
+    # event is visible without designing the full flow yet.
+    - service: logbook.log
+      data:
+        name: "D-FSU a1b2"
+        message: "impact id={{ trigger.payload_json.id }} peakG={{ trigger.payload_json.peakG }}"
+        entity_id: binary_sensor.dfsu_a1b2_impact

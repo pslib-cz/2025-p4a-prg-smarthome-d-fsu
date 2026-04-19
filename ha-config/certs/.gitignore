@@ -1,0 +1,6 @@
+# Keep private keys out of the repo. Only the public CA cert is commitable.
+*.key
+broker.crt
+*.srl
+*.csr
+*.csr.cnf

@@ -1,0 +1,7 @@
+certs/*.key
+certs/*.pem
+secrets.yaml
+
+# Local Docker stack state (bind mounts from docker-compose.yml)
+ha-data/
+mosquitto-data/

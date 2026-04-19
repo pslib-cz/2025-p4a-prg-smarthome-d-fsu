@@ -1,0 +1,29 @@
+# D-FSU Mosquitto ACL.
+#
+# Per contracts/mqtt-schema.md §Broker ACL. Keep identifiers literal; Mosquitto
+# ACL doesn't do variable substitution, so add one block per provisioned box.
+#
+# Topic patterns:
+#   dfsu/<id>/...              — box-owned telemetry, state, impacts
+#   homeassistant/+/dfsu_<id>_+/config — HA Discovery configs (box publishes)
+#   dfsu/<id>/cmd/#            — HA → box commands (box subscribes)
+#
+# HA's own MQTT user gets the mirror-image rules so HA can subscribe broadly
+# and publish only into cmd/.
+
+# --- Home Assistant user (configure username to match configuration.yaml) ---
+user homeassistant
+# HA subscribes to everything the boxes publish, including discovery configs.
+topic read  dfsu/+/#
+topic read  homeassistant/+/dfsu_+_+/config
+# HA publishes only into the command namespace.
+topic write dfsu/+/cmd/#
+
+# --- Per-device user. Replace `a1b2` with the real MAC suffix (lowercase). ---
+user dfsu_a1b2
+topic write dfsu/a1b2/#
+topic write homeassistant/sensor/dfsu_a1b2_+/config
+topic write homeassistant/binary_sensor/dfsu_a1b2_+/config
+topic write homeassistant/light/dfsu_a1b2_+/config
+topic write homeassistant/select/dfsu_a1b2_+/config
+topic read  dfsu/a1b2/cmd/#

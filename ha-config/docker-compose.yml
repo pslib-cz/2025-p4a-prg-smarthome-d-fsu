@@ -1,0 +1,42 @@
+# D-FSU local Home Assistant + Mosquitto stack for development and demos.
+#
+# Runs HA Core + Mosquitto side-by-side on the dev laptop. Config lives in
+# bind-mounted sibling directories so edits in this repo are picked up by
+# the containers without rebuilds.
+#
+# Bring up:   docker compose up -d
+# Logs:       docker compose logs -f
+# Tear down:  docker compose down          # preserves ./ha-data and ./mosquitto-data
+#
+# Host networking is used on Linux so mDNS (homeassistant.local) + BLE-
+# adjacent tooling work out of the box. On Windows/Mac Docker Desktop ignores
+# network_mode: host — ports are forwarded explicitly below for those hosts.
+
+services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: dfsu-ha
+    restart: unless-stopped
+    volumes:
+      - ./ha-data:/config
+      - /etc/localtime:/etc/localtime:ro
+    # Linux: uncomment network_mode and delete the ports: block.
+    # network_mode: host
+    ports:
+      - "8123:8123"
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: dfsu-mosquitto
+    restart: unless-stopped
+    volumes:
+      # mosquitto.conf is read from ./mosquitto/ (paths inside the conf use
+      # container-local /mosquitto/... — see the -docker variant of the conf).
+      - ./mosquitto/mosquitto-docker.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./mosquitto/acl:/mosquitto/config/acl:ro
+      - ./mosquitto-data/passwords:/mosquitto/config/passwords
+      - ./certs:/mosquitto/certs:ro
+      - ./mosquitto-data/data:/mosquitto/data
+      - ./mosquitto-data/log:/mosquitto/log
+    ports:
+      - "8883:8883"

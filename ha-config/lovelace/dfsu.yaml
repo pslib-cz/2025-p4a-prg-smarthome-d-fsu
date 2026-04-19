@@ -1,0 +1,37 @@
+# Minimal fallback Lovelace view for D-FSU. The pretty custom dashboard lives
+# under /config/www/dfsu/ (Phase 6), exposed as a panel_iframe. This view
+# exists so the default HA UI still renders something useful before the
+# custom dashboard is deployed.
+#
+# Entity ids use the literal device slug `a1b2` — duplicate the cards for each
+# provisioned device.
+
+title: D-FSU
+views:
+  - title: Box a1b2
+    path: dfsu-a1b2
+    icon: mdi:toolbox
+    cards:
+      - type: entities
+        title: Environment
+        entities:
+          - sensor.dfsu_a1b2_temperature
+          - sensor.dfsu_a1b2_humidity
+          - sensor.dfsu_a1b2_pressure
+
+      - type: entities
+        title: Battery
+        entities:
+          - sensor.dfsu_a1b2_battery_pct
+          - sensor.dfsu_a1b2_battery_voltage
+          - sensor.dfsu_a1b2_battery_current
+          - sensor.dfsu_a1b2_consumption
+          - sensor.dfsu_a1b2_runtime_open
+          - sensor.dfsu_a1b2_runtime_closed
+          - binary_sensor.dfsu_a1b2_charging
+
+      - type: entities
+        title: Events
+        entities:
+          - binary_sensor.dfsu_a1b2_impact
+          - input_number.dfsu_a1b2_last_impact_id

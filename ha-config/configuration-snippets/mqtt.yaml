@@ -1,0 +1,13 @@
+# Paste into HA's configuration.yaml (or merge if the key already exists).
+# HA discovers D-FSU sensors automatically from retained
+# `homeassistant/.../config` topics the firmware publishes — no manual entity
+# definitions needed here.
+
+mqtt:
+  # discovery is on by default; re-state it for clarity.
+  discovery: true
+  discovery_prefix: homeassistant
+
+# Point the MQTT integration at the Mosquitto add-on / broker. If you use the
+# HA OS Mosquitto add-on, use the GUI integration flow instead of this block —
+# it stores credentials in HA's secret store automatically.
