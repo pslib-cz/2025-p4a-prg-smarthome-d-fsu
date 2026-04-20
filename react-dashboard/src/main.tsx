@@ -7,7 +7,7 @@ import { ThemeProvider } from './context/ThemeContext'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter basename="/MP2025-26_Deimling-Harry_RC-model-s-ridicim-systemem/">
+    <BrowserRouter>
       <ThemeProvider>
         <App />
       </ThemeProvider>
