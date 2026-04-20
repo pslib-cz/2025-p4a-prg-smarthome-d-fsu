@@ -1,0 +1,25 @@
+# Fan out changes to input_select.dfsu_697090_led_mode to the matching script.
+# Scenes set the helper; this automation turns the helper change into the
+# actual MQTT publish. Keeps scenes declarative (no per-scene service calls)
+# and reusable from Lovelace / voice / other automations.
+
+- alias: "D-FSU 697090 — LED mode → MQTT"
+  id: dfsu_697090_led_mode_fanout
+  mode: queued
+  trigger:
+    - platform: state
+      entity_id: input_select.dfsu_697090_led_mode
+  action:
+    - choose:
+        - conditions: "{{ trigger.to_state.state == 'off' }}"
+          sequence:
+            - service: script.dfsu_697090_led_off
+        - conditions: "{{ trigger.to_state.state == 'transit' }}"
+          sequence:
+            - service: script.dfsu_697090_led_transit
+        - conditions: "{{ trigger.to_state.state == 'stored' }}"
+          sequence:
+            - service: script.dfsu_697090_led_stored
+        - conditions: "{{ trigger.to_state.state == 'showcase' }}"
+          sequence:
+            - service: script.dfsu_697090_led_showcase

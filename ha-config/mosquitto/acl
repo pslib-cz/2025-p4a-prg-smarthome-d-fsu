@@ -1,29 +1,25 @@
 # D-FSU Mosquitto ACL.
 #
-# Per contracts/mqtt-schema.md §Broker ACL. Keep identifiers literal; Mosquitto
-# ACL doesn't do variable substitution, so add one block per provisioned box.
-#
-# Topic patterns:
-#   dfsu/<id>/...              — box-owned telemetry, state, impacts
-#   homeassistant/+/dfsu_<id>_+/config — HA Discovery configs (box publishes)
-#   dfsu/<id>/cmd/#            — HA → box commands (box subscribes)
-#
-# HA's own MQTT user gets the mirror-image rules so HA can subscribe broadly
-# and publish only into cmd/.
+# Mosquitto's `+` wildcard replaces ONE FULL topic level — you cannot mix `+`
+# with literal text inside the same level. `dfsu_+_+` is rejected at parse.
+# Since our device ids live inside a composite slug (`dfsu_a1b2_temperature`,
+# all one level), we can't ACL-scope per-device without listing each entity.
+# For local dev we trade perfect isolation for a permissive-but-readable ACL;
+# tighten this before shipping publicly.
 
-# --- Home Assistant user (configure username to match configuration.yaml) ---
+# --- Home Assistant user ---
 user homeassistant
-# HA subscribes to everything the boxes publish, including discovery configs.
-topic read  dfsu/+/#
-topic read  homeassistant/+/dfsu_+_+/config
-# HA publishes only into the command namespace.
+topic read  dfsu/#
+topic read  homeassistant/#
 topic write dfsu/+/cmd/#
 
-# --- Per-device user. Replace `a1b2` with the real MAC suffix (lowercase). ---
+# --- Per-device user. Dev only: firmware auto-derives clientId from MAC
+# (e.g. `dfsu-697090`), which doesn't match a fixed slug, so the write scope
+# is the whole `dfsu/#` tree. Tighten by switching to per-MAC users for prod.
 user dfsu_a1b2
-topic write dfsu/a1b2/#
-topic write homeassistant/sensor/dfsu_a1b2_+/config
-topic write homeassistant/binary_sensor/dfsu_a1b2_+/config
-topic write homeassistant/light/dfsu_a1b2_+/config
-topic write homeassistant/select/dfsu_a1b2_+/config
-topic read  dfsu/a1b2/cmd/#
+topic write dfsu/#
+topic write homeassistant/sensor/#
+topic write homeassistant/binary_sensor/#
+topic write homeassistant/light/#
+topic write homeassistant/select/#
+topic read  dfsu/+/cmd/#

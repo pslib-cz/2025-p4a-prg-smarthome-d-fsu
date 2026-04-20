@@ -23,11 +23,32 @@ DAYS=${DAYS:-3650}
 # --- CA ---
 # Regenerate if either half is missing — an orphaned key alone can't sign,
 # and an orphaned cert without its key is just a public file.
+#
+# Python 3.14 (HA stable) enforces X.509 extensions on CA certs: without an
+# explicit basicConstraints=CA:TRUE + keyUsage=keyCertSign the TLS stack
+# rejects the chain with "CA cert does not include key usage extension". So
+# we generate the CA with those extensions pinned.
 if [[ ! -f dfsu-ca.key || ! -f dfsu-ca.crt ]]; then
     rm -f dfsu-ca.key dfsu-ca.crt
     openssl genrsa -out dfsu-ca.key 4096
+    cat > ca.cnf <<'EOF'
+[req]
+distinguished_name = dn
+x509_extensions    = v3_ca
+prompt             = no
+
+[dn]
+CN = D-FSU Root CA
+
+[v3_ca]
+basicConstraints       = critical, CA:TRUE
+keyUsage               = critical, keyCertSign, cRLSign
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always
+EOF
     openssl req -x509 -new -nodes -key dfsu-ca.key -sha256 -days "$DAYS" \
-        -subj "/CN=D-FSU Root CA" -out dfsu-ca.crt
+        -config ca.cnf -out dfsu-ca.crt
+    rm -f ca.cnf
     echo "generated new CA"
 else
     echo "reusing existing CA (delete dfsu-ca.key to force regen)"
@@ -47,12 +68,19 @@ req_extensions = v3_req
 CN = $BROKER_CN
 
 [v3_req]
-subjectAltName = @alt_names
+basicConstraints = CA:FALSE
+keyUsage         = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName   = @alt_names
 
 [alt_names]
 DNS.1 = $BROKER_CN
 DNS.2 = homeassistant
+DNS.3 = mosquitto
+DNS.4 = dfsu-mosquitto
+DNS.5 = localhost
 IP.1  = $BROKER_IP
+IP.2  = 127.0.0.1
 EOF
 
 openssl req -new -key broker.key -out broker.csr -config broker.csr.cnf

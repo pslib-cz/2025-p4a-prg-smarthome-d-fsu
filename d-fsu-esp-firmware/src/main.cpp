@@ -12,6 +12,17 @@
 #include "net/ha_discovery.h"
 #include "net/mqtt.h"
 #include "net/wifi.h"
+
+// Optional one-shot provisioning header — seeds NVS on first boot if present.
+// Copy provision_local.h.example → provision_local.h locally and fill in real
+// values; the file is gitignored. Without it, the firmware still boots but
+// MQTT stays disabled until NVS is provisioned by other means.
+#if __has_include("net/provision_local.h")
+#include "net/provision_local.h"
+#define DFSU_HAS_PROVISION 1
+#else
+#define DFSU_HAS_PROVISION 0
+#endif
 #include "power/fuel_gauge.h"
 #include "power/sleep.h"
 #include "sensors/bme280.h"
@@ -38,7 +49,7 @@ using namespace dfsu;
 namespace {
 
 constexpr uint32_t kTelemetryPeriodMs = 1000;
-constexpr uint32_t kImuPeriodMs       = 200;   // 5 Hz in ACTIVE
+constexpr uint32_t kImuPeriodMs       = 20;    // 50 Hz in ACTIVE — catches sharp peaks
 constexpr uint32_t kIdleSleepMs       = 60000; // 1 min of idleness → sleep
 // Motion-wake threshold. MUST be comfortably above 1 g or gravity + noise
 // re-latches the MPU INT pin between clear and deep-sleep entry, causing an
@@ -65,6 +76,43 @@ void makeClientId() {
              (unsigned)( mac        & 0xFF));
 }
 
+// If provision_local.h is present and NVS hasn't been populated yet, seed
+// creds + haEnabled from those constants. Idempotent — on subsequent boots
+// hasWifi()/hasMqtt() return true and we skip the write entirely, so the
+// header can stay untouched in the source tree.
+void provisionIfNeeded() {
+    // One-shot migration: the old impact threshold (3.0g) was too tight — the
+    // peakG formula includes 1g of gravity, so a moderate hit never crossed
+    // it. Lower any persisted value >= 2.5g to the new default. Safe to leave
+    // in; runs only until the stored value is the new default.
+    if (config().impactThresholdG >= 2.5f) {
+        DFSU_LOG("prov", "migrating impactThresholdG %.2f → 1.5",
+                 config().impactThresholdG);
+        config().impactThresholdG = 1.5f;
+        nvs::save(config());
+    }
+
+#if DFSU_HAS_PROVISION
+    if (g_creds.hasWifi() && g_creds.hasMqtt()) return;
+
+    DFSU_LOG("prov", "seeding NVS from provision_local.h (one-shot)");
+    net::Creds c{};
+    strncpy(c.wifiSsid, provision::kWifiSsid, sizeof(c.wifiSsid) - 1);
+    strncpy(c.wifiPsk,  provision::kWifiPsk,  sizeof(c.wifiPsk)  - 1);
+    strncpy(c.mqttHost, provision::kMqttHost, sizeof(c.mqttHost) - 1);
+    c.mqttPort = provision::kMqttPort;
+    strncpy(c.mqttUser, provision::kMqttUser, sizeof(c.mqttUser) - 1);
+    strncpy(c.mqttPass, provision::kMqttPass, sizeof(c.mqttPass) - 1);
+    net::saveCreds(c);
+    g_creds = c;
+
+    if (provision::kEnableHaOnFirstBoot && !config().haEnabled) {
+        config().haEnabled = true;
+        nvs::save(config());
+    }
+#endif
+}
+
 // Bring up WiFi + MQTT + HA discovery, then drain any impacts the ring has
 // queued up from previous boots. Safe to call repeatedly; each stage early-
 // exits if already up. Returns true if MQTT ends up connected.
@@ -76,6 +124,11 @@ bool bringUpNetwork() {
     if (!net::wifi::isConnected()) {
         if (!net::wifi::begin(g_creds.wifiSsid, g_creds.wifiPsk)) return false;
     }
+    // TLS handshake fails closed against the cert's notBefore date unless the
+    // clock is post-2024. First call on a fresh boot actually hits NTP; later
+    // calls short-circuit immediately.
+    net::wifi::syncTime();
+
     net::mqtt::Config mc{
         .host       = g_creds.mqttHost,
         .port       = g_creds.mqttPort,
@@ -98,6 +151,12 @@ bool bringUpNetwork() {
     if (impact_log::readPending(buf, 8, n)) {
         for (uint16_t i = 0; i < n; ++i) {
             if (buf[i].eventId <= mqttAck) continue;
+            // Skip junk from the MPU-6500 break window — ack so compact drops
+            // them, but don't pollute the MQTT stream with 0g "impacts".
+            if (buf[i].peakG < config().impactThresholdG) {
+                impact_log::ackMqtt(buf[i].eventId);
+                continue;
+            }
             if (!net::mqtt::publishImpact(buf[i])) break;
         }
     }
@@ -180,15 +239,17 @@ void debugConsumerTask(void*) {
                          (unsigned)i.eventId, i.peakG, i.gX, i.gY, i.gZ,
                          (unsigned)impact_log::pendingCount());
                 ble::publishImpact(i, i.timestampMs / 1000);
-                // Look up the persisted record (carries the final eventId) and
-                // try the MQTT path too. A failure here is fine — the ring
-                // holds it until next reconnect drains it.
-                impact_log::Record last{};
-                uint16_t n = 0;
-                if (impact_log::readPending(&last, 1, n) && n == 1 &&
-                    last.eventId > impact_log::mqttAckedId()) {
-                    net::mqtt::publishImpact(last);
-                }
+                // Publish the event we just appended — NOT the oldest in the
+                // ring. Build the Record directly from the ImpactEvent + the
+                // eventId returned by append(). readPending() returns the tail
+                // (oldest unacked), which would republish stale records every
+                // time a new impact happens.
+                impact_log::Record r{};
+                r.eventId     = i.eventId;
+                r.timestampMs = i.timestampMs;
+                r.gX = i.gX; r.gY = i.gY; r.gZ = i.gZ;
+                r.peakG = i.peakG;
+                net::mqtt::publishImpact(r);
                 break;
             }
             case EventKind::CaseChange: {
@@ -282,10 +343,17 @@ void printBootBanner(power::WakeCause cause) {
     ev.peakG = m.peakG;
 
     impact_log::begin();
-    uint32_t id = impact_log::append(ev);
-    DFSU_LOG("logsb", "motion=%d peak=%.2fg id=%u pending=%u",
-             motion ? 1 : 0, ev.peakG, (unsigned)id,
-             (unsigned)impact_log::pendingCount());
+    uint32_t id = 0;
+    if (ev.peakG > config().impactThresholdG) {
+        id = impact_log::append(ev);
+        DFSU_LOG("logsb", "motion=%d peak=%.2fg id=%u pending=%u",
+                 motion ? 1 : 0, ev.peakG, (unsigned)id,
+                 (unsigned)impact_log::pendingCount());
+    } else {
+        // MPU hiccup or spurious wake — don't pollute the log with 0g events.
+        DFSU_WARN("logsb", "spurious wake (peak=%.2fg < threshold %.2fg) — skipping append",
+                  ev.peakG, config().impactThresholdG);
+    }
 
     // One-shot INA read for the fuel-gauge LOG_SB debit.
     ina::Reading r{};
@@ -362,6 +430,7 @@ void setup() {
     // either is missing.
     makeClientId();
     net::loadCreds(g_creds);
+    provisionIfNeeded();
     bringUpNetwork();
 
     fsm().setMode(Mode::Active);

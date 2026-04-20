@@ -3,3 +3,7 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
+
+# Local provisioning secrets — never committed. Copy provision_local.h.example
+# to provision_local.h and fill in real values.
+src/net/provision_local.h

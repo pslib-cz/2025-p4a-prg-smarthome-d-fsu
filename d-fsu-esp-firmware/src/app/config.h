@@ -10,7 +10,7 @@ namespace dfsu {
 struct RuntimeConfig {
     // Battery / power
     uint32_t packCapacityMah = 5000;     // 2S BMS, 2x 2500 mAh cells in parallel-of-cells fashion
-    float impactThresholdG = 3.0f;       // trigger LOG_SB path + burst capture scene
+    float impactThresholdG = 1.5f;       // total-magnitude threshold; 1g baseline is gravity
     uint8_t lowBatteryPct = 15;          // notify/LED amber below
 
     // HA / MQTT

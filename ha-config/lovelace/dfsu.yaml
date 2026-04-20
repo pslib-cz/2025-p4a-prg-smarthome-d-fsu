@@ -1,37 +1,147 @@
-# Minimal fallback Lovelace view for D-FSU. The pretty custom dashboard lives
-# under /config/www/dfsu/ (Phase 6), exposed as a panel_iframe. This view
-# exists so the default HA UI still renders something useful before the
-# custom dashboard is deployed.
+# YAML-mode Lovelace dashboard for D-FSU. Loaded as a second dashboard from
+# configuration.yaml so HA's auto-generated overview stays untouched.
 #
-# Entity ids use the literal device slug `a1b2` — duplicate the cards for each
-# provisioned device.
+# Entity ids come from the MQTT discovery `name` fields once HA slugifies the
+# device display name "D-FSU dfsu-697090" + entity name. For this device the
+# prefix resolves to `d_fsu_dfsu_697090_` — one block per provisioned device.
 
 title: D-FSU
 views:
-  - title: Box a1b2
-    path: dfsu-a1b2
+  - title: Box 697090
+    path: box-697090
     icon: mdi:toolbox
+    badges: []
     cards:
-      - type: entities
-        title: Environment
+      - type: grid
+        columns: 3
+        square: false
+        cards:
+          - type: gauge
+            entity: sensor.d_fsu_dfsu_697090_temperature
+            name: Temperature
+            unit: "°C"
+            min: -10
+            max: 50
+            severity:
+              green: 5
+              yellow: 30
+              red: 40
+          - type: gauge
+            entity: sensor.d_fsu_dfsu_697090_humidity
+            name: Humidity
+            unit: "%"
+            min: 0
+            max: 100
+            severity:
+              green: 30
+              yellow: 65
+              red: 80
+          - type: gauge
+            entity: sensor.d_fsu_dfsu_697090_battery
+            name: Battery
+            unit: "%"
+            min: 0
+            max: 100
+            severity:
+              green: 50
+              yellow: 20
+              red: 10
+
+      - type: history-graph
+        title: Environment (24h)
+        hours_to_show: 24
         entities:
-          - sensor.dfsu_a1b2_temperature
-          - sensor.dfsu_a1b2_humidity
-          - sensor.dfsu_a1b2_pressure
+          - sensor.d_fsu_dfsu_697090_temperature
+          - sensor.d_fsu_dfsu_697090_humidity
+          - sensor.d_fsu_dfsu_697090_pressure
 
       - type: entities
         title: Battery
+        state_color: true
         entities:
-          - sensor.dfsu_a1b2_battery_pct
-          - sensor.dfsu_a1b2_battery_voltage
-          - sensor.dfsu_a1b2_battery_current
-          - sensor.dfsu_a1b2_consumption
-          - sensor.dfsu_a1b2_runtime_open
-          - sensor.dfsu_a1b2_runtime_closed
-          - binary_sensor.dfsu_a1b2_charging
+          - entity: sensor.d_fsu_dfsu_697090_battery_voltage
+            name: Voltage
+          - entity: sensor.d_fsu_dfsu_697090_battery_current
+            name: Current
+          - entity: sensor.d_fsu_dfsu_697090_consumption
+            name: Consumption
+          - entity: sensor.d_fsu_dfsu_697090_runtime_open
+            name: Runtime (open)
+          - entity: sensor.d_fsu_dfsu_697090_runtime_closed
+            name: Runtime (closed)
+          - entity: binary_sensor.d_fsu_dfsu_697090_charging
+            name: Charging
 
-      - type: entities
-        title: Events
+      - type: history-graph
+        title: Battery voltage (24h)
+        hours_to_show: 24
         entities:
-          - binary_sensor.dfsu_a1b2_impact
-          - input_number.dfsu_a1b2_last_impact_id
+          - sensor.d_fsu_dfsu_697090_battery_voltage
+          - sensor.d_fsu_dfsu_697090_battery_current
+
+      - type: glance
+        title: Events
+        show_state: true
+        columns: 2
+        entities:
+          - entity: binary_sensor.d_fsu_dfsu_697090_impact
+            name: Impact
+          - entity: binary_sensor.d_fsu_dfsu_697090_charging
+            name: Charging
+
+      # --- Interactive controls ----------------------------------------
+      # Scenes + direct service buttons that publish to dfsu/<id>/cmd/*.
+      # Firmware handlers live in d-fsu-esp-firmware/src/net/mqtt.cpp.
+      - type: entities
+        title: LED mode
+        show_header_toggle: false
+        entities:
+          - entity: input_select.dfsu_697090_led_mode
+            name: Current mode
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Transit
+            icon: mdi:truck-fast
+            tap_action:
+              action: call-service
+              service: scene.turn_on
+              service_data:
+                entity_id: scene.d_fsu_697090_transit
+          - type: button
+            name: Stored
+            icon: mdi:package-variant-closed
+            tap_action:
+              action: call-service
+              service: scene.turn_on
+              service_data:
+                entity_id: scene.d_fsu_697090_stored
+          - type: button
+            name: Showcase
+            icon: mdi:lightbulb-on
+            tap_action:
+              action: call-service
+              service: scene.turn_on
+              service_data:
+                entity_id: scene.d_fsu_697090_showcase
+          - type: button
+            name: Off
+            icon: mdi:lightbulb-off
+            tap_action:
+              action: call-service
+              service: script.dfsu_697090_led_off
+
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: OLED full
+            icon: mdi:monitor-dashboard
+            tap_action:
+              action: call-service
+              service: script.dfsu_697090_oled_full
+          - type: button
+            name: OLED off
+            icon: mdi:monitor-off
+            tap_action:
+              action: call-service
+              service: script.dfsu_697090_oled_off

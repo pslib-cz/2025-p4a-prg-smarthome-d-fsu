@@ -1,0 +1,36 @@
+# Low-battery warnings for dfsu-697090.
+#
+# Two thresholds: 20% → warn once, 10% → critical. Both fire on the crossing
+# edge only (numeric_state 'below' is edge-triggered), so they won't spam.
+
+- alias: "D-FSU 697090 — battery warn <20%"
+  id: dfsu_697090_battery_warn
+  mode: single
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.d_fsu_dfsu_697090_battery
+      below: 20
+  action:
+    - service: persistent_notification.create
+      data:
+        title: "D-FSU battery low"
+        notification_id: "dfsu_697090_batt_warn"
+        message: >-
+          Box dfsu-697090 battery at {{ states('sensor.d_fsu_dfsu_697090_battery') }}%
+          — plan to charge soon.
+
+- alias: "D-FSU 697090 — battery critical <10%"
+  id: dfsu_697090_battery_crit
+  mode: single
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.d_fsu_dfsu_697090_battery
+      below: 10
+  action:
+    - service: persistent_notification.create
+      data:
+        title: "D-FSU battery CRITICAL"
+        notification_id: "dfsu_697090_batt_crit"
+        message: >-
+          Box dfsu-697090 battery at {{ states('sensor.d_fsu_dfsu_697090_battery') }}%
+          — charge now or it will shut down.

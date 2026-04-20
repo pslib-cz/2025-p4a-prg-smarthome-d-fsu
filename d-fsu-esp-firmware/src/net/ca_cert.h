@@ -2,47 +2,44 @@
 
 // Root CA used to verify the Mosquitto broker's TLS certificate.
 //
-// PLACEHOLDER — replace with your real CA PEM (self-signed CA from
-// ha-config/certs/dfsu-ca.crt, or Let's Encrypt ISRG Root X1 if the broker is
-// exposed publicly via a trusted chain). The firmware will REFUSE to connect
-// until this is replaced — we fail closed rather than silently skip TLS
-// verification.
-//
-// To regenerate the self-signed CA: see ha-config/certs/README.md.
+// Self-signed D-FSU Root CA. Regenerate via ha-config/certs/gen-certs.sh;
+// paste the resulting dfsu-ca.crt contents between the R"CERT(...)CERT"
+// delimiters below. The broker cert must be re-signed by the same CA and
+// mounted into the mosquitto container at /mosquitto/certs/broker.crt.
 
 namespace dfsu::net {
 
 // When `kCaCertPem[0] == '\0'`, MQTT stays disabled (guards against shipping
 // with an empty cert).
 inline constexpr const char* kCaCertPem = R"CERT(-----BEGIN CERTIFICATE-----
-MIIFETCCAvmgAwIBAgIUfpl5vDEB5xBhsC+gAsmcA2xgBBkwDQYJKoZIhvcNAQEL
-BQAwGDEWMBQGA1UEAwwNRC1GU1UgUm9vdCBDQTAeFw0yNjA0MTkxNjA0MDVaFw0z
-NjA0MTYxNjA0MDVaMBgxFjAUBgNVBAMMDUQtRlNVIFJvb3QgQ0EwggIiMA0GCSqG
-SIb3DQEBAQUAA4ICDwAwggIKAoICAQDGLjo+Ba+caNuMfZ9ASrNUXutum01hN5oE
-/uA5lsJq241aEbwGNSrbp62VLFis9gKLpUR3/OVlv1J9tWiXpwAe2hwm+8PkqAvv
-CrASaG00+bGgoAJgtqwthFSOGntwptIK9pWSsrPHGL1GTEyRFcRLKN+AjerVx67s
-sYcJHnu/0xv9dm6gCdTfrEMotAbj/c7oDa2GcdlE1ix5UsxRer+KKJMV/+9HkPkr
-AXFE/rNeoIEgKRl6QL5ZhK44gxTtdP4grQw9WZlOKMKTsNWSm06WsaxL8z8D4bH7
-6dYrbQMlajXwfKv8G1vH8OlzANVBGBItuN7NtKmnHFBtWSwWlo+CJ2ePTyJeND7d
-IOSzLBmcVIebkimP32rE6oomKFtH4A5QlrS7naoiX9fJeYqFAANxVASZXKeirV+y
-n45JFL9V3f3I/TuCQzrGj4ElLPk+8chDRvd7oidf57GgPFPCaD/61TwZq285trdL
-TI5X1c6UIgxYpYB6xCBrMVGc5mcqjqkpvhZkRsE9PFkOT7WY0hQICcAmXgqyTMTT
-bKW1LFKQpZaqFAnq55TfmZJ5cIH/htGkze3mw6wK080YCmgM3OxZVGvhIcsH9+oE
-+NE4DkH3J23n9kguYiABuwRaNKd84ekLJbmtNC19CYHKI72MJiBuDBMOBTtPZPrh
-x0nNXUl4GQIDAQABo1MwUTAdBgNVHQ4EFgQUJrqg6ByU06nnsNPfB/C+VvmsmMcw
-HwYDVR0jBBgwFoAUJrqg6ByU06nnsNPfB/C+VvmsmMcwDwYDVR0TAQH/BAUwAwEB
-/zANBgkqhkiG9w0BAQsFAAOCAgEAX20P0A2oJw5ifwoHzKe4nc/j3r9aCHu2ApZf
-TkB00GH4u58VSmiz64Xq7d36V6J1DGUKdRo0DPRPPS9+u6MAUOscTuv0wxSWUrRr
-A7m94yVenRZ5ifhdFNhyoe3s4Bk+bKUfhfqMUvdvNu2SSoq/P+O1wFBuVg9yXPmf
-klv9CCf0qaqzVCPSWANenBK0SSbVVIv7isi6QfpszASWd+Z5VUUFp9sIb96tyJTM
-IzGauS4IOlFWs6ty2j760QLI0VsChryHxeUH8hcl0D0n/wjARB4Zw1znFGJ+UZkl
-SpIFu7zmi0+IXlZosj++ceGxceLyYIuyKC+0goJtn4zr7BAFcM3g7JesNT+SWW3V
-a703dodz+nbVRhOabDd/rPn8d5IN5XFCfR3YL3d8xYG6DNSdi3rfXvUMRiXMtGrW
-yTrzmBzRY/RCpOvjRQVCGnOE34vB8JLR0FaZEgDO9uK/8KnbvojWaGoP673suPcx
-fv5RPYvpvzzHPx3ezleZLU7JdWVrKDn8bE/vXcGp96uatpdNqXwlOAnLa70yUid6
-jenKvEBnG6OZQo3/SLIaVuGNdAQdgvjwDnsaFDv6CzeKe2yxzSaS1IPnFg4AYlj5
-TTGt8FnYOiOeZoMCYvg/8aKlgDac/r6d0XOS7zjtN2EbhfX0VwMkVdr0H0rWIxrm
-lNUSOu4=
+MIIFITCCAwmgAwIBAgIUawfxC+Jaq2+gp1heJxCgqDS/vP8wDQYJKoZIhvcNAQEL
+BQAwGDEWMBQGA1UEAwwNRC1GU1UgUm9vdCBDQTAeFw0yNjA0MjAyMDA2NDVaFw0z
+NjA0MTcyMDA2NDVaMBgxFjAUBgNVBAMMDUQtRlNVIFJvb3QgQ0EwggIiMA0GCSqG
+SIb3DQEBAQUAA4ICDwAwggIKAoICAQDkzXm28o+wTDyhDvHwq1YS1cLETDWIOMU9
+zL4pCc/h77LQNrkSjw3X+XtVMNJ3hpjrTkLcvImjTpS1L7TaP2LiA+lpok6fKqKG
+ARD7sJytNLG2/GWwkCkXYCS9MwWBc1J+NeB51145JcCS6w8ltIFN7Qh/7ExaPicD
+7ix8N+YuDv9vUkAYZMdg/wS6Qvwk9APHUX7IvImXU+7t8+7DxfQ6K8DTJvf8YuIi
+20wPYfiuCmesFFEdH3EM0DZThABG+KlfWDjmEkKJ8ExF4xLZqXUKcx55GpqCDMBR
+2sAi90aj66pCutuMF3PWzZqg/ub0h60u0ImijmT82/ak+XfF8iSn+Y4YTX5Y71Iq
+eQVbyy/wWfIHhrIr0Et13inl8TTWrZpQ2Ynue2iIT33WBZZjIr6P6vo2O+HhfrQ5
+DdOYGw4OEl8BCHyUwCGsCAWsOZRMpG+SHrHey6jyjbczi1ujYOdoYDpXvj0LMGoj
+rrzgYNo48LuU9kPxP1ddZf6mM4g+gaWyT5gFeXq7h3Bf8eFRBRsCrGXl2/A1d5d3
+bOB9YqSWfMtTt4HpJ3aK6mFuuQM/UAyqYFwfbentGH9fRh9biU6CPvlaiP1yQwmn
+uQ2tZRwanN+isoPdPcU7wsduxlccpeu609d+n2A3Lx2KzcMYGEgIkKaHVhjmJv3+
+XsGmYd/8XQIDAQABo2MwYTAPBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIB
+BjAdBgNVHQ4EFgQUuUuMbJbDH51KMOeTQoO0uKtLZPowHwYDVR0jBBgwFoAUuUuM
+bJbDH51KMOeTQoO0uKtLZPowDQYJKoZIhvcNAQELBQADggIBAH1YTwGacn7eKme0
+JXCXyYVMigTcVoqKITq+5uB6omaX18HFfErWl84268x3UzudM1kN9brnGI6qvQNX
+K4RrhWtlcyrt2TqMLSGsrXegogPgwOjmfmCy+iuxs6Yf13BIg8PwrWQB02Mo8Ifo
+5N8wSdfDSAU83lxgkC1skui2echXGBW4Nm/R7rkb+/JPfryABaQb7hpi0wBwrF4A
+INRjFGJYEj8w74TRVFWfcaCRUzzfvQUrJN26SUdEwFBiCwVScH/BTuEsgPCp4NVd
+v5nSxL/Fpt6SWzf9jzmNC0ag/8dKTTV/eNWKS3aFAoQtZw41LulEfI25MZtRJb78
++jpx9ccsx+bv8aZa5ImwH11bv65WAFVarESmLGx2cv5TAgYz6scQ3skhIhZiCmJn
+k2VHsIQ1LDGxpT9+YToeOsl0/FfHH9beXtarprZpQpan52eCg/STPMHoM2PcdgjV
+G/8Y8n8MeR2E02mOjmYrxm5eD1XeiKvTsfLRPnHpPesTRgPA70ntsPwWLrTD9uNs
+s1sbHxgTO5d2v0s8cDtEKOqxwoNERQjQPPLeVBz2q4iYbZycIqaZ/3ixXdcAUTfo
+rJcfPDC+JZ+p2THRAbI+KpBdu/UKB3siLeCLgPA6ES9RhwWAv31g0ZcXrJOT1RAc
+hoFpnDdoE1m7aOIdZH7lmAgpVO3m
 -----END CERTIFICATE-----
 )CERT";
 

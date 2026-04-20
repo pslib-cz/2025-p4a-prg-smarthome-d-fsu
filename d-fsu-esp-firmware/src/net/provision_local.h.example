@@ -1,0 +1,24 @@
+#pragma once
+
+// Copy this file to `provision_local.h` and fill in your own values.
+// provision_local.h is gitignored — don't commit real secrets.
+//
+// Used by the one-shot bootstrap block in main.cpp: if NVS hasn't been
+// populated yet, these values get written on first boot. After NVS is
+// provisioned, the constants stop being read — they're only a seed.
+
+namespace dfsu::provision {
+
+inline constexpr const char* kWifiSsid = "YourSSID";
+inline constexpr const char* kWifiPsk  = "YourWiFiPassword";
+inline constexpr const char* kMqttHost = "192.168.1.49";
+inline constexpr uint16_t    kMqttPort = 8883;
+inline constexpr const char* kMqttUser = "dfsu_a1b2";
+inline constexpr const char* kMqttPass = "dfsu-dev";
+
+// Flip haEnabled on first boot too, so the firmware actually tries to reach
+// the broker once creds are in. Set to false to provision creds but keep HA
+// off (e.g. for BLE-only demos).
+inline constexpr bool kEnableHaOnFirstBoot = true;
+
+}  // namespace dfsu::provision
