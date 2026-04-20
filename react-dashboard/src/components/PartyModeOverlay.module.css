@@ -1,0 +1,107 @@
+.overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 32px;
+	background: var(--bg-primary);
+	animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+.title {
+	font-size: clamp(1.2rem, 4vw, 1.8rem);
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--color-red);
+	text-align: center;
+}
+
+.timerRing {
+	position: relative;
+	width: 200px;
+	height: 200px;
+}
+
+.timerSvg {
+	width: 100%;
+	height: 100%;
+	transform: rotate(-90deg);
+}
+
+.timerTrack {
+	fill: none;
+	stroke: rgba(128, 128, 128, 0.15);
+	stroke-width: 6;
+}
+
+.timerProgress {
+	fill: none;
+	stroke: var(--color-red);
+	stroke-width: 6;
+	stroke-linecap: round;
+	transition: stroke-dashoffset 0.1s linear;
+	filter: drop-shadow(0 0 8px rgba(204, 0, 0, 0.5));
+}
+
+.timerValue {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: clamp(2.8rem, 10vw, 4.5rem);
+	font-weight: 700;
+	color: var(--text-primary);
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.02em;
+}
+
+.cancelButton {
+	font-family: var(--font-family);
+	padding: 14px 48px;
+	border: 2px solid var(--border-color);
+	border-radius: 0;
+	background: transparent;
+	color: var(--text-secondary);
+	font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+	background: rgba(128, 128, 128, 0.1);
+	border-color: var(--text-primary);
+	color: var(--text-primary);
+}
+
+.cancelButton:focus-visible {
+	outline: 2px solid var(--color-red);
+	outline-offset: 2px;
+}
+
+@media (max-width: 430px) {
+	.timerRing {
+		width: 150px;
+		height: 150px;
+	}
+
+	.cancelButton {
+		padding: 12px 36px;
+	}
+}

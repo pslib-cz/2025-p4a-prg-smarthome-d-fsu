@@ -1,0 +1,143 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 12px;
+	height: 100%;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-shrink: 0;
+}
+
+.icon {
+	width: 22px;
+	height: 22px;
+	color: var(--color-red);
+	flex-shrink: 0;
+}
+
+.title {
+	font-weight: 700;
+	font-size: 1rem;
+	margin: 0;
+	color: var(--text-primary);
+}
+
+.content {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex: 1;
+	min-height: 0;
+}
+
+.statsColumn {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	flex: 1;
+	min-width: 0;
+}
+
+.statRow {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 6px;
+}
+
+.statLabel {
+	font-size: 0.8rem;
+	color: var(--text-secondary);
+	font-weight: 500;
+	white-space: nowrap;
+}
+
+.statValue {
+	font-size: 0.95rem;
+	font-weight: 700;
+	color: var(--text-primary);
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+.statValueSmall {
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: var(--text-secondary);
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+.gaugeWrapper {
+	position: relative;
+	width: 100px;
+	height: 100px;
+	flex-shrink: 0;
+}
+
+.gaugeSvg {
+	width: 100%;
+	height: 100%;
+}
+
+.progressTrack {
+	fill: none;
+	stroke: var(--color-lighter-grey);
+	stroke-width: 8;
+}
+
+.progressValue {
+	fill: none;
+	stroke: var(--color-green, #22c55e);
+	stroke-width: 8;
+	stroke-linecap: butt;
+	transition: stroke-dashoffset 0.5s ease-out, stroke 0.3s ease;
+}
+
+.progressValue.low {
+	stroke: var(--color-orange, #f59e0b);
+}
+
+.progressValue.critical {
+	stroke: var(--color-red, #ef4444);
+}
+
+.percentageOverlay {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+	pointer-events: none;
+}
+
+.percentageValue {
+	font-size: 1.4rem;
+	font-weight: 800;
+	color: var(--text-primary);
+	line-height: 1;
+}
+
+.lowText {
+	color: var(--color-orange, #f59e0b);
+}
+
+.criticalText {
+	color: var(--color-red, #ef4444);
+}
+
+.percentageLabel {
+	font-size: 0.7rem;
+	color: var(--text-secondary);
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	font-weight: 600;
+}

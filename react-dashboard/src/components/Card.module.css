@@ -1,0 +1,13 @@
+.card {
+  background-color: var(--bg-card);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.noPadding {
+  padding: 0;
+}

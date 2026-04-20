@@ -1,0 +1,671 @@
+.dashboardWrapper {
+  border: 1px solid var(--color-lighter-grey);
+  overflow: hidden;
+}
+
+.dashboard {
+  display: grid;
+  gap: 1px;
+  width: 100%;
+  background-color: var(--color-lighter-grey);
+}
+
+.dashboard > * {
+  background-color: var(--bg-card);
+}
+
+.advancedToggle,
+.heightToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: clamp(64px, 11vw, 110px);
+  padding: clamp(10px, 2vw, 18px);
+  font-size: clamp(1.2rem, 3.6vw, 2rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  gap: 12px;
+  color: var(--text-primary);
+}
+
+.advancedSlider,
+.heightSlider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(12px, 2.6vw, 22px);
+}
+
+.advancedSlider > *,
+.heightSlider > * {
+  width: 100%;
+}
+
+/* ---- Chassis tabs ---- */
+.chassisTabs {
+  display: flex;
+  gap: 0;
+  margin-left: auto;
+}
+
+.chassisTab {
+  border: 1px solid var(--color-lighter-grey);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-family);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 0;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.chassisTab:hover:not(.activeTab) {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .chassisTab:hover:not(.activeTab) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.chassisTab.activeTab {
+  background-color: var(--color-red);
+  color: var(--color-white);
+  border-color: var(--color-red);
+}
+
+/* ---- Analytics row inside grid ---- */
+.correlationChart {
+  min-height: 380px;
+}
+
+.interventionMonitor,
+.peakValues {
+  min-height: 200px;
+}
+
+/* ---- Responsive: Narrow mobile ≤430px — single column ---- */
+@media (max-width: 430px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+    grid-auto-rows: minmax(40px, auto);
+  }
+
+  .battery {
+    grid-column: span 1;
+    order: 1;
+  }
+
+  .overload {
+    grid-column: span 1;
+    order: 2;
+  }
+
+  .chassis {
+    grid-column: span 1;
+    order: 3;
+  }
+
+  .batteryStatus {
+    grid-column: span 1;
+    order: 4;
+  }
+
+  .drivingModes {
+    grid-column: span 1;
+    order: 5;
+  }
+
+  .systemStatus {
+    grid-column: span 1;
+    order: 6;
+  }
+
+  .interventionMonitor {
+    grid-column: span 1;
+    order: 7;
+    min-height: 160px;
+  }
+
+  .correlationChart {
+    grid-column: span 1;
+    order: 8;
+    min-height: 260px;
+  }
+
+  .peakValues {
+    grid-column: span 1;
+    order: 9;
+    min-height: 140px;
+  }
+
+  .advancedToggle {
+    grid-column: span 1;
+    order: 10;
+  }
+
+  .advancedSlider {
+    grid-column: span 1;
+    order: 11;
+  }
+
+  .heightToggle {
+    grid-column: span 1;
+    order: 12;
+  }
+
+  .heightSlider {
+    grid-column: span 1;
+    order: 13;
+  }
+
+  /* Chassis: tabs below title */
+  .chassisHeader {
+    flex-wrap: wrap;
+    padding: 8px 8px 4px 8px;
+  }
+
+  .chassisTabs {
+    width: 100%;
+    justify-content: center;
+    margin-left: 0;
+    margin-top: 4px;
+  }
+
+  .chassisTab {
+    flex: 1;
+    text-align: center;
+    font-size: 0.75rem;
+    padding: 6px 8px;
+  }
+
+  .chassisTitle {
+    font-size: 0.9rem;
+  }
+
+  .chassisContent {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .inclinometers {
+    flex-direction: row;
+    max-height: 130px;
+  }
+}
+
+/* ---- Responsive: Mobile 2 columns ---- */
+@media (min-width: 431px) and (max-width: 599px) {
+  .dashboard {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: minmax(70px, auto);
+  }
+
+  .battery {
+    grid-column: span 1;
+    grid-row: span 2;
+    order: 1;
+  }
+
+  .overload {
+    grid-column: span 1;
+    grid-row: span 2;
+    order: 2;
+  }
+
+  .chassis {
+    grid-column: span 2;
+    grid-row: span 2;
+    order: 3;
+  }
+
+  .batteryStatus {
+    grid-column: span 1;
+    grid-row: span 1;
+    order: 4;
+  }
+
+  .systemStatus {
+    grid-column: span 1;
+    grid-row: span 1;
+    order: 5;
+  }
+
+  .drivingModes {
+    grid-column: span 2;
+    grid-row: span 1;
+    order: 6;
+  }
+
+  /* Analytics */
+  .interventionMonitor {
+    grid-column: span 2;
+    order: 7;
+  }
+
+  .correlationChart {
+    grid-column: span 2;
+    order: 8;
+  }
+
+  .peakValues {
+    grid-column: span 2;
+    order: 9;
+  }
+
+  .advancedToggle {
+    grid-column: span 2;
+    order: 10;
+  }
+
+  .advancedSlider {
+    grid-column: span 2;
+    order: 11;
+  }
+
+  .heightToggle {
+    grid-column: span 2;
+    order: 12;
+  }
+
+  .heightSlider {
+    grid-column: span 2;
+    order: 13;
+  }
+
+  .batteryStatus,
+  .systemStatus,
+  .drivingModes,
+  .advancedSlider,
+  .heightSlider {
+    grid-row: span 2;
+  }
+}
+
+/* ---- Responsive: Tablet 2 columns ---- */
+@media (min-width: 600px) and (max-width: 1023px) {
+  .dashboard {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: minmax(75px, auto);
+    grid-auto-flow: row dense;
+  }
+
+  .battery {
+    grid-column: span 1;
+    grid-row: span 2;
+    order: 1;
+  }
+
+  .chassis {
+    grid-column: span 2;
+    grid-row: span 2;
+    order: 2;
+  }
+
+  .overload {
+    grid-column: span 1;
+    grid-row: span 2;
+    order: 3;
+  }
+
+  .batteryStatus {
+    grid-column: span 1;
+    grid-row: span 1;
+    order: 4;
+  }
+
+  .systemStatus {
+    grid-column: span 1;
+    grid-row: span 1;
+    order: 5;
+  }
+
+  .drivingModes {
+    grid-column: span 2;
+    grid-row: span 1;
+    order: 6;
+  }
+
+  /* Analytics */
+  .correlationChart {
+    grid-column: span 2;
+    order: 7;
+  }
+
+  .interventionMonitor {
+    grid-column: span 1;
+    order: 8;
+  }
+
+  .peakValues {
+    grid-column: span 1;
+    order: 9;
+  }
+
+  .advancedToggle {
+    grid-column: span 2;
+    order: 10;
+  }
+
+  .advancedSlider {
+    grid-column: span 1;
+    order: 11;
+  }
+
+  .heightToggle {
+    grid-column: span 2;
+    order: 12;
+  }
+
+  .heightSlider {
+    grid-column: span 1;
+    order: 13;
+  }
+
+  .batteryStatus,
+  .systemStatus,
+  .drivingModes,
+  .advancedSlider,
+  .heightSlider {
+    grid-row: span 2;
+  }
+}
+
+/* ---- Responsive: Desktop 4 columns ---- */
+@media (min-width: 1024px) {
+  .dashboard {
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: minmax(80px, auto);
+  }
+
+  .battery {
+    grid-column: span 1;
+    grid-row: span 2;
+    order: 1;
+  }
+
+  .chassis {
+    grid-column: span 2;
+    grid-row: span 2;
+    order: 2;
+  }
+
+  .overload {
+    grid-column: span 1;
+    grid-row: span 2;
+    order: 3;
+  }
+
+  .batteryStatus {
+    grid-column: span 1;
+    grid-row: span 1;
+    order: 4;
+  }
+
+  .drivingModes {
+    grid-column: span 2;
+    grid-row: span 1;
+    order: 5;
+  }
+
+  .systemStatus {
+    grid-column: span 1;
+    grid-row: span 1;
+    order: 6;
+  }
+
+  /* Analytics row: 1 | 2 | 1 */
+  .interventionMonitor {
+    grid-column: span 1;
+    grid-row: span 2;
+    order: 7;
+  }
+
+  .correlationChart {
+    grid-column: span 2;
+    grid-row: span 2;
+    order: 8;
+  }
+
+  .peakValues {
+    grid-column: span 1;
+    grid-row: span 2;
+    order: 9;
+  }
+
+  .advancedToggle {
+    grid-column: span 4;
+    order: 10;
+  }
+
+  .advancedSlider {
+    grid-column: span 1;
+    order: 11;
+  }
+
+  .heightToggle {
+    grid-column: span 4;
+    order: 12;
+  }
+
+  .heightSlider {
+    grid-column: span 1;
+    order: 13;
+  }
+
+  .batteryStatus,
+  .systemStatus,
+  .drivingModes,
+  .advancedSlider,
+  .heightSlider {
+    grid-row: span 2;
+  }
+}
+
+.inclinometers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 0;
+  width: 100%;
+  max-width: 560px;
+  min-width: 0;
+  max-height: 350px;
+  padding: 8px 0;
+}
+
+/* Při vertikálním zalamování - inklinometry vedle sebe */
+@media (max-width: 1023px) {
+  .inclinometers {
+    flex-direction: row;
+    max-height: none;
+    gap: 16px;
+  }
+}
+
+.inclinometers > * {
+  flex: 1;
+  min-height: 0;
+  max-height: calc((350px - 8px) / 2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Při horizontálním layoutu - bez max výšky */
+@media (max-width: 1023px) {
+  .inclinometers > * {
+    max-height: none;
+    flex: 1;
+    width: 100%;
+  }
+}
+
+.chassisHeader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  width: 100%;
+  flex-shrink: 0;
+  padding: 8px 4px 2px 4px;
+  flex-wrap: wrap;
+}
+
+.chassisIcon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+/* Light mode - červená ikona */
+:root .chassisIcon {
+  filter: brightness(0) saturate(100%) invert(17%) sepia(91%) saturate(7497%) hue-rotate(2deg) brightness(96%) contrast(118%);
+}
+
+/* Dark mode - červená ikona */
+[data-theme="dark"] .chassisIcon {
+  filter: brightness(0) saturate(100%) invert(17%) sepia(91%) saturate(7497%) hue-rotate(2deg) brightness(96%) contrast(118%);
+}
+
+.chassisTitle {
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.chassis {
+  align-items: stretch;
+  justify-content: flex-start;
+  text-align: initial;
+}
+
+.chassis > * {
+  width: 100%;
+}
+
+.chassisContent {
+  display: flex;
+  gap: 32px;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+  justify-content: center;
+  padding: 0 8px 8px 8px;
+}
+
+/* Responsivní škálování pro úzké prostory */
+@media (max-width: 599px) {
+  .chassisContent {
+    gap: 16px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 1023px) {
+  .chassisContent {
+    gap: 24px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 1023px) {
+  .inclinometers {
+    max-width: 460px;
+    margin: 0 auto;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1299px) {
+  .chassisContent {
+    gap: 20px;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1220px) {
+  .chassisContent {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .inclinometers,
+  .suspensionBlock {
+    max-width: none;
+  }
+}
+
+.suspensionWrapper {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.suspensionBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+@media (max-width: 1023px) {
+  .suspensionBlock {
+    gap: 8px;
+  }
+}
+
+.suspensionCaption {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.batteryStatus {
+  align-items: stretch;
+  justify-content: center;
+  text-align: initial;
+}
+
+.batteryStatus > * {
+  width: 100%;
+}
+
+.drivingModes {
+  align-items: stretch;
+  justify-content: center;
+  text-align: initial;
+}
+
+.drivingModes > * {
+  width: 100%;
+}
+
+.systemStatus {
+  align-items: stretch;
+  justify-content: center;
+  text-align: initial;
+}
+
+.systemStatus > * {
+  width: 100%;
+}

@@ -1,0 +1,173 @@
+.container {
+  --suspension-bg: var(--bg-card);
+  --suspension-text: var(--text-primary);
+  --suspension-border: var(--text-primary);
+  --suspension-track-bg: var(--color-grey);
+  --suspension-fill: var(--color-red);
+  --suspension-center-line: var(--text-primary);
+  --suspension-width: 420px;
+  --suspension-spacing: 16px;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+}
+
+[data-theme="dark"] .container {
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+}
+
+.visualizationWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--suspension-spacing);
+  width: min(100%, var(--suspension-width));
+  padding: 8px;
+}
+
+@media (max-width: 1023px) {
+  .container {
+    --suspension-width: 360px;
+    --suspension-spacing: 12px;
+  }
+}
+
+@media (max-width: 799px) {
+  .container {
+    --suspension-width: 320px;
+  }
+}
+
+@media (max-width: 599px) {
+  .container {
+    --suspension-width: 280px;
+  }
+}
+
+.leftWheels,
+.rightWheels {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  justify-content: space-between;
+  flex: 0 0 auto;
+  height: auto;
+}
+
+.wheelContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.wheelLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--suspension-text);
+  text-align: center;
+  min-height: 16px;
+  margin-bottom: 2px;
+}
+
+.progressBarWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progressBar {
+  width: 32px;
+  height: 100px;
+  position: relative;
+}
+
+.progressTrack {
+  width: 100%;
+  height: 100%;
+  background-color: var(--suspension-track-bg);
+  border: 2px solid var(--suspension-border);
+  border-radius: 0;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.centerLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  background-color: var(--suspension-center-line);
+  z-index: 2;
+  opacity: 0.8;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+.progressFill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, 
+    var(--suspension-fill) 0%, 
+    var(--suspension-fill) 70%,
+    rgba(204, 0, 0, 0.7) 100%);
+  transition: height 0.5s ease-out;
+  opacity: 0.85;
+}
+
+.progressFillRed {
+  background: linear-gradient(to top, 
+    #ff0000 0%, 
+    #ff0000 70%,
+    rgba(255, 0, 0, 0.8) 100%);
+  opacity: 0.95;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.95; }
+  50% { opacity: 1; }
+}
+
+.chassisContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: clamp(180px, 40vw, 220px);
+  gap: 4px;
+}
+
+.chassisImage {
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  object-fit: contain;
+}
+
+/* Light mode - černé SVG */
+:root .chassisImage {
+  filter: brightness(0) saturate(100%);
+}
+
+/* Dark mode - bílé SVG */
+[data-theme="dark"] .chassisImage {
+  filter: brightness(0) invert(1);
+}
+
+.chassisLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--suspension-text);
+  text-align: center;
+  flex-shrink: 0;
+}

@@ -1,0 +1,113 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	width: 100%;
+	gap: 16px;
+	padding: 12px 8px 16px 8px;
+	color: var(--text-primary);
+	text-align: center;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: 100%;
+}
+
+.icon {
+	width: 26px;
+	height: 26px;
+	object-fit: contain;
+	filter: brightness(0) saturate(100%) invert(17%) sepia(91%) saturate(7497%) hue-rotate(2deg) brightness(96%) contrast(118%);
+}
+
+[data-theme="dark"] .icon {
+	filter: brightness(0) saturate(100%) invert(17%) sepia(91%) saturate(7497%) hue-rotate(2deg) brightness(96%) contrast(118%);
+}
+
+.title {
+	margin: 0;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+}
+
+.modesRow {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	width: 100%;
+	gap: 0;
+}
+
+.modeButton {
+	font-family: var(--font-family);
+	flex: 1 1 20%;
+	min-width: 120px;
+	padding: clamp(10px, 2.2vw, 15px) 0;
+	border: none;
+	border-radius: 0;
+	background: transparent;
+	color: var(--text-secondary);
+	font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.modeButton:focus-visible {
+	outline: 2px solid var(--color-red);
+	outline-offset: -2px;
+}
+
+.modeButton:hover:not(.selected) {
+	background-color: rgba(0, 0, 0, 0.08);
+	color: var(--text-primary);
+}
+
+[data-theme="dark"] .modeButton:hover:not(.selected) {
+	background-color: rgba(255, 255, 255, 0.15);
+}
+
+
+.selected {
+	background-color: var(--color-red);
+	color: var(--color-white);
+}
+
+.partyButton:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
+.modeButton:disabled:not(.partyButton) {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+	.modeButton {
+		flex: 1 1 50%;
+		min-width: 80px;
+	}
+}
+
+@media (max-width: 430px) {
+	.modesRow {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0;
+	}
+
+	.modeButton {
+		flex: initial;
+		min-width: unset;
+		font-size: 0.85rem;
+		padding: 10px 0;
+	}
+}

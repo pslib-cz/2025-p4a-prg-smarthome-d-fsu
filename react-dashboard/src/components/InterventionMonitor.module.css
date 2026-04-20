@@ -1,0 +1,89 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-orange, #f59e0b);
+  flex-shrink: 0;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.statsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+  justify-content: center;
+}
+
+.statCard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statNumber {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.statLabel {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.statBar {
+  width: 100%;
+  height: 5px;
+  border-radius: 0;
+  background: var(--color-lighter-grey, #e5e5e5);
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+[data-theme="dark"] .statBar {
+  background: rgba(255,255,255,0.08);
+}
+
+.statBarFill {
+  height: 100%;
+  border-radius: 0;
+  transition: width 0.5s ease;
+}
+
+.tractionBar {
+  background: var(--color-red);
+}
+
+.diveBar {
+  background: var(--color-red);
+  opacity: 0.7;
+}
+
+.squatBar {
+  background: var(--color-red);
+  opacity: 0.5;
+}

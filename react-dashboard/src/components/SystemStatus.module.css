@@ -1,0 +1,163 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	gap: 16px;
+	padding: 12px 10px 16px 10px;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: 100%;
+}
+
+.headerIcon {
+	width: 26px;
+	height: 26px;
+	filter: brightness(0) saturate(100%) invert(17%) sepia(91%) saturate(7497%) hue-rotate(2deg) brightness(96%) contrast(118%);
+}
+
+[data-theme="dark"] .headerIcon {
+	filter: brightness(0) saturate(100%) invert(17%) sepia(91%) saturate(7497%) hue-rotate(2deg) brightness(96%) contrast(118%);
+}
+
+.title {
+	margin: 0;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	color: var(--text-primary);
+}
+
+.metricsGrid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 18px 24px;
+	width: 100%;
+}
+
+.metric {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	text-align: center;
+}
+
+.label {
+	margin: 0;
+	font-size: 0.95rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	color: var(--text-primary);
+}
+
+.signalIndicator,
+.statusIndicator {
+	width: 48px;
+	height: 48px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.signalSvg {
+	width: 34px;
+	height: 34px;
+}
+
+.signalBarActive {
+	fill: var(--color-red);
+	transition: fill 0.2s ease, opacity 0.2s ease;
+}
+
+.signalBarIdle {
+	fill: var(--text-muted);
+	opacity: 0.45;
+}
+
+.warningIcon {
+	width: 44px;
+	height: 44px;
+	background-color: var(--color-red);
+	mask-image: url('../assets/warning-symbol.svg');
+	mask-repeat: no-repeat;
+	mask-position: center;
+	mask-size: contain;
+	-webkit-mask-image: url('../assets/warning-symbol.svg');
+	-webkit-mask-repeat: no-repeat;
+	-webkit-mask-position: center;
+	-webkit-mask-size: contain;
+}
+
+.tickIcon {
+	width: 34px;
+	height: 34px;
+	filter: brightness(0) saturate(100%) invert(55%) sepia(80%) saturate(404%) hue-rotate(63deg) brightness(95%) contrast(91%);
+}
+
+.statusCaption {
+	margin: 0;
+	font-size: 0.9rem;
+	color: var(--text-muted);
+}
+
+.statusCaption {
+	margin: 0;
+	font-size: 0.9rem;
+	color: var(--text-muted);
+}
+
+.signalGood {
+	color: var(--color-green);
+}
+
+.signalWarn {
+	color: var(--color-amber);
+}
+
+.signalCrit {
+	color: var(--color-red);
+}
+
+.latencyValue {
+	margin: 0;
+	font-size: 1.08rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+}
+
+.latencyGood {
+	color: var(--color-green);
+}
+
+.latencyNeutral {
+	color: var(--color-amber);
+}
+
+[data-theme="dark"] .latencyNeutral {
+	color: var(--color-white);
+	text-shadow: 0 0 6px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="light"] .latencyNeutral {
+	text-shadow: none;
+}
+
+.latencyBad {
+	color: var(--color-red);
+}
+
+.latencyUnknown {
+	color: var(--text-muted);
+}
+
+@media (max-width: 640px) {
+	.metricsGrid {
+		gap: 16px 12px;
+	}
+}
