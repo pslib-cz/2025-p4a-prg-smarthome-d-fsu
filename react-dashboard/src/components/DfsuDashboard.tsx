@@ -1,7 +1,9 @@
 import { useHomeAssistant } from '../hooks/useHomeAssistant';
+import { useDfsuDemo } from '../hooks/useDfsuDemo';
 import ThemeToggle from './ThemeToggle';
 import ExitButton from './ExitButton';
 import styles from './DfsuDashboard.module.css';
+import type { DfsuImpact, DfsuTelemetry, HaStatus } from '../types/dfsu';
 
 // Public read-only dashboard for D-FSU. Data flows ESP32 → Mosquitto →
 // Home Assistant → this page over a WebSocket. Token is a long-lived
@@ -58,11 +60,17 @@ function BoxIcon({ open }: { open: boolean }) {
   );
 }
 
-export default function DfsuDashboard() {
-  const { status, error, telemetry, impacts } = useHomeAssistant();
+interface DfsuDashboardViewProps {
+  status: HaStatus;
+  error: string | null;
+  telemetry: DfsuTelemetry | null;
+  impacts: DfsuImpact[];
+  demo?: boolean;
+}
 
+export function DfsuDashboardView({ status, error, telemetry, impacts, demo = false }: DfsuDashboardViewProps) {
   const live = status === 'authed' && telemetry !== null;
-  const statusLabel =
+  const statusLabel = demo ? 'Demo' :
     status === 'authed' ? (telemetry ? 'Live' : 'Waiting') :
     status === 'connecting' ? 'Connecting' :
     status === 'error' ? 'Error' :
@@ -232,8 +240,18 @@ export default function DfsuDashboard() {
       )}
 
       <footer className={styles.footer}>
-        ESP32-S3 · Mosquitto · Home Assistant · Cloudflare Tunnel
+        {demo ? 'Demo režim · simulovaná data' : 'ESP32-S3 · Mosquitto · Home Assistant · Cloudflare Tunnel'}
       </footer>
     </div>
   );
+}
+
+export default function DfsuDashboard() {
+  const data = useHomeAssistant();
+  return <DfsuDashboardView {...data} />;
+}
+
+export function DfsuDemoDashboard() {
+  const data = useDfsuDemo();
+  return <DfsuDashboardView {...data} demo />;
 }

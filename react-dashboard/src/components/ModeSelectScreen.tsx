@@ -79,10 +79,20 @@ export default function ModeSelectScreen() {
             </span>
           </button>
         </div>
+
+        <div className={styles.demoRow}>
+          <button
+            type="button"
+            className={styles.demoLink}
+            onClick={() => navigate('/dfsu-demo')}
+          >
+            Box · demo režim
+          </button>
+        </div>
       </main>
 
       <footer className={styles.footer}>
-        Školní projekty P4A/MPA + P4A/PRG · SPŠE Ječná
+        Školní projekty P4A/MPA + P4A/PRG · Průmyslovka Liberec
       </footer>
     </div>
   );

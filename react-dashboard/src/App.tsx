@@ -6,7 +6,7 @@ import Header from './components/Header'
 import Dashboard from './components/Dashboard'
 import ConnectionScreen from './components/ConnectionScreen'
 import AuthScreen from './components/AuthScreen'
-import DfsuDashboard from './components/DfsuDashboard'
+import DfsuDashboard, { DfsuDemoDashboard } from './components/DfsuDashboard'
 import ModeSelectScreen from './components/ModeSelectScreen'
 import './App.css'
 
@@ -170,6 +170,7 @@ function App() {
       <Route path="/dashboard" element={<DashboardPage ble={ble} />} />
       <Route path="/demo" element={<DemoPage />} />
       <Route path="/dfsu" element={<DfsuDashboard />} />
+      <Route path="/dfsu-demo" element={<DfsuDemoDashboard />} />
     </Routes>
   )
 }
